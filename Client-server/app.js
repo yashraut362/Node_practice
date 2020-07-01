@@ -1,11 +1,17 @@
 const express = require('express');
-
+const morgan = require('morgan')
 const app = express();
+//monogo db connect
+const dbURI = "mongodb+srv://yash:Yash12345@node.xfhjt.mongodb.net/<dbname>?retryWrites=true&w=majority";
 //regi view engine
 
 app.set('view engine', 'ejs');
 
 app.listen(3000);
+
+app.use(morgan('dev'));
+
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     const blogs = [
