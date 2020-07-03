@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Blog = require('./models/blog');
 const { result } = require('lodash');
+const { render } = require('ejs');
 const app = express();
 //monogo db connect
 const dbURI = "mongodb+srv://yash:Yash12345@node.xfhjt.mongodb.net/nodenew?retryWrites=true&w=majority";
@@ -20,6 +21,7 @@ app.listen(3000);
 //app.use(morgan('dev'));
 
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
 //sandbox logics
 
 // app.get('/add-blog', (req, res) => {
@@ -80,6 +82,37 @@ app.get('/blogs', (req, res) => {
         })
 });
 
+app.post('/blogs', (req, res) => {
+    const blog = new Blog(req.body)
+    blog.save()
+        .then((result) => {
+            res.redirect('./blogs');
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+})
+app.get('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+    Blog.findById(id)
+        .then(result => {
+            res.render('details', { blog: result, title: 'Blog detail' })
+        })
+        .catch(err => {
+            console.log(err);
+        });
+});
+
+app.delete('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+    Blog.findByIdAndDelete(id)
+        .then(result => {
+            res.json({ redirect: '/blogs' });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+})
 
 app.get('/about-us', (req, res) => {
     res.redirect('about');
